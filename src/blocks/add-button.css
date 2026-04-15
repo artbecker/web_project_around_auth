@@ -1,0 +1,16 @@
+.add-button {
+  width: 150px;
+  height: 50px;
+  border: 2px solid #fff;
+  border-radius: 2px;
+  background-image: url(../images/add-icon.svg);
+  background-size: 22px 22px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.add-button:hover {
+  opacity: 0.6;
+}
