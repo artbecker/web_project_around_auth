@@ -41,3 +41,5 @@ This project is part of the **TripleTen Web Development Program**.
 ## 📝 Nota ao revisor
 
 Deixei **lang="en"** pois fiz todo o projeto em inglês, incluindo os títulos, campos de formulário e mensagens de erro.
+
+# https://artbecker.github.io/web_project_around_auth/
