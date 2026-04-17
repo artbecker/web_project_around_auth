@@ -16,7 +16,7 @@
 }
 
 .profile__pic::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
@@ -95,5 +95,6 @@
 
   .profile__name {
     max-width: 100%;
+    font-size: 24px;
   }
 }

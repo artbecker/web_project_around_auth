@@ -13,6 +13,7 @@
   height: 30px;
   border: none;
   border-bottom: 1px solid #0008;
+  background: none;
 }
 
 .form__input_type_error {

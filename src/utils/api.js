@@ -28,7 +28,7 @@ class Api {
 
   addCard(cardData) {
     return fetch(`${this._baseUrl}/cards`, {
-      method: "POST",
+      method: 'POST',
       headers: this._headers,
       body: JSON.stringify(cardData),
     }).then((res) => {
@@ -41,7 +41,7 @@ class Api {
 
   deleteCard(cardId) {
     return fetch(`${this._baseUrl}/cards/${cardId}`, {
-      method: "DELETE",
+      method: 'DELETE',
       headers: this._headers,
     }).then((res) => {
       if (res.ok) {
@@ -53,7 +53,7 @@ class Api {
 
   likeCard(cardId) {
     return fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
-      method: "PUT",
+      method: 'PUT',
       headers: this._headers,
     }).then((res) => {
       if (res.ok) {
@@ -65,7 +65,7 @@ class Api {
 
   unlikeCard(cardId) {
     return fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
-      method: "DELETE",
+      method: 'DELETE',
       headers: this._headers,
     }).then((res) => {
       if (res.ok) {
@@ -81,7 +81,7 @@ class Api {
 
   updateUserInfo(userData) {
     return fetch(`${this._baseUrl}/users/me`, {
-      method: "PATCH",
+      method: 'PATCH',
       headers: this._headers,
       body: JSON.stringify(userData),
     }).then((res) => {
@@ -94,7 +94,7 @@ class Api {
 
   updateAvatar(avatarData) {
     return fetch(`${this._baseUrl}/users/me/avatar`, {
-      method: "PATCH",
+      method: 'PATCH',
       headers: this._headers,
       body: JSON.stringify(avatarData),
     }).then((res) => {
@@ -107,10 +107,10 @@ class Api {
 }
 
 const api = new Api({
-  baseUrl: "https://around-api.pt-br.tripleten-services.com/v1",
+  baseUrl: 'https://around-api.pt-br.tripleten-services.com/v1',
   headers: {
-    authorization: "9880e492-cc34-43ed-85f9-d43573e3ec9b",
-    "Content-Type": "application/json",
+    Authorization: '9880e492-cc34-43ed-85f9-d43573e3ec9b',
+    'Content-Type': 'application/json',
   },
 });
 

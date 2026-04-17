@@ -1,16 +1,114 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Children } from 'react';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 
-import Header from "./Header/Header.jsx";
-import Main from "./Main/Main.jsx";
-import Footer from "./Footer/Footer.jsx";
-import api from "../utils/api.js";
-import CurrentUserContext from "../contexts/CurrentUserContext.js";
+import Header from './Header/Header.jsx';
+import Footer from './Footer/Footer.jsx';
+import Register from './Register/Register.jsx';
+import Login from './Login/Login.jsx';
+import Main from './Main/Main.jsx';
+import api from '../utils/api.js';
+import * as auth from '../utils/auth.js';
+import { setToken, getToken, checkToken, removeToken } from '../utils/auth.js';
+import CurrentUserContext from '../contexts/CurrentUserContext.js';
+import ProtectedRoute from './ProtectedRoute/ProtectedRoute.jsx';
+import InfoTooltip from './Popup/components/InfoTooltip/InfoTooltip.jsx';
 
 function App() {
+  // auth hooks
+  const [userData, setUserData] = useState({ email: '' });
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  // api hooks
   const [currentUser, setCurrentUser] = useState({});
   const [popup, setPopup] = useState(null);
   const [cards, setCards] = useState([]);
   const [cardToDelete, setCardToDelete] = useState(null);
+
+  const navigate = useNavigate();
+
+  // auth logic
+
+  const handleRegistration = ({ email, password }) => {
+    auth
+      .register(email, password)
+      .then(() => {
+        handleOpenPopup({
+          title: 'Success!',
+          children: (
+            <InfoTooltip
+              message='Now you are a member of our community!'
+              isSuccess={true}
+            />
+          ),
+        });
+        navigate('/signin');
+      })
+      .catch(() => {
+        handleOpenPopup({
+          title: 'Sorry, we have a problem.',
+          children: (
+            <InfoTooltip message='Please, try again.' isSuccess={false} />
+          ),
+        });
+        console.error;
+      });
+  };
+
+  const handleLogin = ({ email, password }) => {
+    if (!email || !password) {
+      return;
+    }
+
+    auth
+      .authorize(email, password)
+      .then((data) => {
+        if (data.token) {
+          setToken(data.token);
+          setUserData({ email });
+          setIsLoggedIn(true);
+          navigate('/');
+        }
+      })
+      .catch(() => {
+        handleOpenPopup({
+          title: 'Sorry, we have a problem',
+          children: (
+            <InfoTooltip message='Please, try again.' isSuccess={false} />
+          ),
+        });
+        console.error;
+      });
+  };
+
+  const HandleLogout = () => {
+    removeToken();
+    setIsLoggedIn(false);
+    setUserData({ email: '' });
+  };
+
+  useEffect(() => {
+    const token = getToken();
+
+    if (!token) {
+      setIsCheckingAuth(false);
+      return;
+    }
+
+    auth
+      .checkToken(token)
+      .then((res) => {
+        const { email } = res.data;
+        setIsLoggedIn(true);
+        setUserData({ email });
+      })
+      .catch(console.error)
+      .finally(() => {
+        setIsCheckingAuth(false);
+      });
+  }, []);
+
+  // api logic
 
   useEffect(() => {
     api
@@ -19,7 +117,7 @@ function App() {
         setCards(cardData);
       })
       .catch((error) => {
-        console.error("Erro ao buscar cartões:", error);
+        console.error('Erro ao buscar cartões:', error);
       });
   }, []);
 
@@ -108,6 +206,12 @@ function App() {
     })();
   };
 
+  // page
+
+  if (isCheckingAuth) {
+    return;
+  }
+
   return (
     <CurrentUserContext.Provider
       value={{
@@ -119,16 +223,69 @@ function App() {
         cardToDelete,
       }}
     >
-      <div className="page">
-        <Header />
-        <Main
-          onOpenPopup={handleOpenPopup}
-          onClosePopup={handleClosePopup}
-          popup={popup}
-          cards={cards}
-          onCardLike={handleCardLike}
-          onDeleteClick={handleDeleteClick}
+      <div className='page'>
+        <Header
+          isLoggedIn={isLoggedIn}
+          userEmail={userData.email}
+          onSignOut={HandleLogout}
         />
+        <Routes>
+          <Route
+            path='/signin'
+            element={
+              isLoggedIn ? (
+                <Navigate to='/' replace />
+              ) : (
+                <Login
+                  handleLogin={handleLogin}
+                  onOpenPopup={handleOpenPopup}
+                  onClosePopup={handleClosePopup}
+                  popup={popup}
+                />
+              )
+            }
+          />
+          <Route
+            path='/signup'
+            element={
+              isLoggedIn ? (
+                <Navigate to='/' replace />
+              ) : (
+                <Register
+                  handleRegistration={handleRegistration}
+                  onOpenPopup={handleOpenPopup}
+                  onClosePopup={handleClosePopup}
+                  popup={popup}
+                />
+              )
+            }
+          />
+          <Route
+            path='/'
+            element={
+              <ProtectedRoute isLoggedIn={isLoggedIn}>
+                <Main
+                  onOpenPopup={handleOpenPopup}
+                  onClosePopup={handleClosePopup}
+                  popup={popup}
+                  cards={cards}
+                  onCardLike={handleCardLike}
+                  onDeleteClick={handleDeleteClick}
+                />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path='*'
+            element={
+              isLoggedIn ? (
+                <Navigate to='/' replace />
+              ) : (
+                <Navigate to='/signin' replace />
+              )
+            }
+          />
+        </Routes>
         <Footer />
       </div>
     </CurrentUserContext.Provider>
