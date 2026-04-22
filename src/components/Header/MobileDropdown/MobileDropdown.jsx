@@ -1,6 +1,6 @@
 import React from 'react';
 
-function MobileDropdown({ isOpen, userEmail, onSignOut, onClose }) {
+function MobileDropdown({ isOpen, userEmail, onSignOut }) {
   if (!isOpen) return null;
 
   return (

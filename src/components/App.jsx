@@ -1,4 +1,4 @@
-import { useState, useEffect, Children } from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 
 import Header from './Header/Header.jsx';
@@ -8,7 +8,7 @@ import Login from './Login/Login.jsx';
 import Main from './Main/Main.jsx';
 import api from '../utils/api.js';
 import * as auth from '../utils/auth.js';
-import { setToken, getToken, checkToken, removeToken } from '../utils/auth.js';
+import { setToken, getToken, removeToken } from '../utils/auth.js';
 import CurrentUserContext from '../contexts/CurrentUserContext.js';
 import ProtectedRoute from './ProtectedRoute/ProtectedRoute.jsx';
 import InfoTooltip from './Popup/components/InfoTooltip/InfoTooltip.jsx';
@@ -51,7 +51,6 @@ function App() {
             <InfoTooltip message='Please, try again.' isSuccess={false} />
           ),
         });
-        console.error;
       });
   };
 
@@ -77,11 +76,10 @@ function App() {
             <InfoTooltip message='Please, try again.' isSuccess={false} />
           ),
         });
-        console.error;
       });
   };
 
-  const HandleLogout = () => {
+  const handleLogout = () => {
     removeToken();
     setIsLoggedIn(false);
     setUserData({ email: '' });
@@ -121,10 +119,9 @@ function App() {
       });
   }, []);
 
-  async function handleCardLike(card) {
+  function handleCardLike(card) {
     const isLiked = card.isLiked;
-
-    await api
+    api
       .changeLikeCardStatus(card._id, isLiked)
       .then((newCard) => {
         setCards((state) =>
@@ -136,8 +133,8 @@ function App() {
       .catch((error) => console.error(error));
   }
 
-  async function handleCardDelete(card) {
-    await api
+  function handleCardDelete(card) {
+    api
       .deleteCard(card._id)
       .then(() => {
         setCards((state) =>
@@ -163,47 +160,39 @@ function App() {
   }
 
   useEffect(() => {
-    (async () => {
-      await api.getUserInfo().then((data) => {
-        setCurrentUser(data);
-      });
-    })();
+    api.getUserInfo().then((data) => {
+      setCurrentUser(data);
+    });
   }, []);
 
   const handleUpdateUser = (data) => {
-    (async () => {
-      await api
-        .updateUserInfo(data)
-        .then((newData) => {
-          setCurrentUser(newData);
-          handleClosePopup();
-        })
-        .catch((error) => console.error(error));
-    })();
+    api
+      .updateUserInfo(data)
+      .then((newData) => {
+        setCurrentUser(newData);
+        handleClosePopup();
+      })
+      .catch((error) => console.error(error));
   };
 
   const handleUpdateAvatar = (data) => {
-    (async () => {
-      await api
-        .updateAvatar(data)
-        .then((newData) => {
-          setCurrentUser(newData);
-          handleClosePopup();
-        })
-        .catch((error) => console.error(error));
-    })();
+    api
+      .updateAvatar(data)
+      .then((newData) => {
+        setCurrentUser(newData);
+        handleClosePopup();
+      })
+      .catch((error) => console.error(error));
   };
 
   const handleAddPictureSubmit = (data) => {
-    (async () => {
-      await api
-        .addCard(data)
-        .then((newCard) => {
-          setCards([newCard, ...cards]);
-          handleClosePopup();
-        })
-        .catch((error) => console.error(error));
-    })();
+    api
+      .addCard(data)
+      .then((newCard) => {
+        setCards([newCard, ...cards]);
+        handleClosePopup();
+      })
+      .catch((error) => console.error(error));
   };
 
   // page
@@ -227,7 +216,7 @@ function App() {
         <Header
           isLoggedIn={isLoggedIn}
           userEmail={userData.email}
-          onSignOut={HandleLogout}
+          onSignOut={handleLogout}
         />
         <Routes>
           <Route
